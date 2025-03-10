@@ -21,7 +21,7 @@ type Entry struct {
 	AccountID int64 `json:"account_id"`
 	// amount can be negative or positive
 	Amount    int64              `json:"amount"`
-	CreatedAt pgtype.Timestamptz `json:"createdAt"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
 type Transfer struct {
@@ -30,5 +30,5 @@ type Transfer struct {
 	ToAccountID   int64 `json:"to_account_id"`
 	// amount can only be positive
 	Amount    int64              `json:"amount"`
-	CreatedAt pgtype.Timestamptz `json:"createdAt"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }

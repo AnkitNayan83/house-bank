@@ -12,14 +12,16 @@ CREATE TABLE "entries" (
     "id" bigserial PRIMARY KEY,
     "account_id" BIGINT NOT NULL,
     "amount" BIGINT NOT NULL,
-    "createdAt" timestamptz NOT NULL DEFAULT now()
-);-- Create "transfers" table
+    "created_at" timestamptz NOT NULL DEFAULT now()
+);
+
+-- Create "transfers" table
 CREATE TABLE "transfers" (
   "id" bigserial PRIMARY KEY,
   "from_account_id" BIGINT NOT NULL,
   "to_account_id" BIGINT NOT NULL,
   "amount" BIGINT NOT NULL,
-  "createdAt" timestamptz NOT NULL DEFAULT now()
+  "created_at" timestamptz NOT NULL DEFAULT now()
 );
 
 -- Add Foreign Keys after creating all tables

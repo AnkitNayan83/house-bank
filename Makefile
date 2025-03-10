@@ -20,5 +20,7 @@ migratedown:
 	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose down
 sqlc:
 	sqlc generate
+test:
+	go test -v -cover ./...
 
-.PHONY: postgresrun postgresstart postgresstop createdb dropdb migrateup migratedown sqlc
+.PHONY: postgresrun postgresstart postgresstop createdb dropdb migrateup migratedown sqlc test
