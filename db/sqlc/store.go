@@ -91,44 +91,6 @@ func (store *Store) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxPara
 		}
 		result.ToEntry = &toEntry
 
-		//TODO: ADD LOCKS
-		// // Get Account for from account
-		// fromAccount, err := q.GetAccountById(ctx, arg.FromAccountID)
-		// if err != nil {
-		// 	return err
-		// }
-
-		// if fromAccount.Balance < arg.Amount {
-		// 	return fmt.Errorf("insufficient balance in %v's account", fromAccount.Owner)
-		// }
-
-		// // Update Balance for from account
-		// updatedFromAccount, err := q.UpdateAccount(ctx, UpdateAccountParams{
-		// 	ID:      arg.FromAccountID,
-		// 	Balance: fromAccount.Balance - arg.Amount,
-		// })
-
-		// if err != nil {
-		// 	return err
-		// }
-		// result.FromAccount = &updatedFromAccount
-
-		// // Get Account for to account
-		// toAccount, err := q.GetAccountById(ctx, arg.ToAccountID)
-		// if err != nil {
-		// 	return err
-		// }
-
-		// // Update Balance for to account
-		// updatedToAccount, err := q.UpdateAccount(ctx, UpdateAccountParams{
-		// 	ID:      arg.ToAccountID,
-		// 	Balance: toAccount.Balance + arg.Amount,
-		// })
-		// if err != nil {
-		// 	return err
-		// }
-		// result.ToAccount = &updatedToAccount
-
 		return nil
 	})
 
