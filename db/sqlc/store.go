@@ -57,10 +57,20 @@ type TransfeMoneyTxResult struct {
 	ToEntry     *Entry    `json:"to_entry"`
 }
 
+// txKey is a custom key for transaction context. It will allow us to pass the name of the transaction
+// to the context so we can log it later
+// type txKetType struct{}
+
+// var txKey = txKetType{}
+
 func (store *Store) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParams) (TransfeMoneyTxResult, error) {
 	var result TransfeMoneyTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
+
+		// txName := ctx.Value(txKey)
+
+		// fmt.Println(txName, ">> create transfer")
 		// create transfer
 		transfer, err := q.CreateTransfer(ctx, CreateTransferParams(arg))
 		if err != nil {
@@ -90,6 +100,24 @@ func (store *Store) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxPara
 			return err
 		}
 		result.ToEntry = &toEntry
+
+		fromAccount, err := q.AddAccountBalance(ctx, AddAccountBalanceParams{
+			ID:     arg.FromAccountID,
+			Amount: -arg.Amount,
+		})
+		if err != nil {
+			return err
+		}
+		result.FromAccount = &fromAccount
+
+		toAccount, err := q.AddAccountBalance(ctx, AddAccountBalanceParams{
+			ID:     arg.ToAccountID,
+			Amount: +arg.Amount,
+		})
+		if err != nil {
+			return err
+		}
+		result.ToAccount = &toAccount
 
 		return nil
 	})

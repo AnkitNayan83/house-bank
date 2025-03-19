@@ -1,3 +1,5 @@
+postgresconsole:
+	docker exec -it postgres17 psql -U root -d house_bank
 postgresrun:
 	docker run --name postgres17 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=postgres -d postgres:17-alpine
 
@@ -23,4 +25,4 @@ sqlc:
 test:
 	go test -v -cover ./...
 
-.PHONY: postgresrun postgresstart postgresstop createdb dropdb migrateup migratedown sqlc test
+.PHONY: postgresconsole postgresrun postgresstart postgresstop createdb dropdb migrateup migratedown sqlc test
