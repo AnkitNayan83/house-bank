@@ -112,3 +112,54 @@ func TestTransferMoneyTx(t *testing.T) {
 	require.Equal(t, account2.Balance+int64(n)*amount, updateAccount2.Balance)
 
 }
+
+func TestTransferMoneyTxDL(t *testing.T) {
+	store := NewStore(testDb)
+
+	account1 := createRandomAccount(t)
+	account2 := createRandomAccount(t)
+
+	fmt.Println(">> before: ", account1.Balance, account2.Balance)
+
+	// run n concurent transfer transactions
+	n := 10
+	errs := make(chan error)
+	amount := int64(10_000)
+
+	for i := range n {
+		fromAccountId := account1.ID
+		toAccountId := account2.ID
+
+		if i%2 == 0 {
+			fromAccountId = account2.ID
+			toAccountId = account1.ID
+		}
+
+		go func() {
+			_, err := store.TransferMoneyTx(context.Background(), TransferMoneyTxParams{
+				FromAccountID: fromAccountId,
+				ToAccountID:   toAccountId,
+				Amount:        amount,
+			})
+
+			errs <- err
+		}()
+	}
+
+	for range n {
+		err := <-errs
+
+		require.NoError(t, err)
+	}
+
+	// check final updated balance
+	updateAccount1, err := testQueries.GetAccountById(context.Background(), account1.ID)
+	require.NoError(t, err)
+
+	updateAccount2, err := testQueries.GetAccountById(context.Background(), account2.ID)
+	require.NoError(t, err)
+	fmt.Println(">> after: ", updateAccount1.Balance, updateAccount2.Balance)
+	require.Equal(t, account1.Balance, updateAccount1.Balance)
+	require.Equal(t, account2.Balance, updateAccount2.Balance)
+
+}
