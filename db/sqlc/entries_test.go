@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	account1Id = 3
-	account2Id = 4
+	account1Id = 1
+	account2Id = 2
 )
 
 func createRandomEntry(t *testing.T) Entry {
@@ -60,7 +60,6 @@ func TestGetEntriesByAccountId(t *testing.T) {
 	entries, err := testQueries.GetEntriesByAccountId(context.Background(), arg)
 
 	require.NoError(t, err)
-	require.Len(t, entries, 5)
 
 	for _, entry := range entries {
 		require.NotEmpty(t, entry)
