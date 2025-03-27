@@ -62,7 +62,7 @@ func (q *Queries) GetAllTransferFromAAccount(ctx context.Context, arg GetAllTran
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Transfer
+	items := []Transfer{}
 	for rows.Next() {
 		var i Transfer
 		if err := rows.Scan(
@@ -102,7 +102,7 @@ func (q *Queries) GetAllTransfersBetweenTwoAccounts(ctx context.Context, arg Get
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Transfer
+	items := []Transfer{}
 	for rows.Next() {
 		var i Transfer
 		if err := rows.Scan(
