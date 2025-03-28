@@ -6,19 +6,22 @@ import (
 	"os"
 	"testing"
 
+	"github.com/AnkitNayan83/houseBank/util"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
 )
-
-const dbSource = "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable"
 
 var testQueries *Queries
 var testDb *pgxpool.Pool
 
 func TestMain(m *testing.M) {
-	var err error
+	config, err := util.LoadConfig("../..")
 
-	testDb, err = pgxpool.New(context.Background(), dbSource)
+	if err != nil {
+		log.Fatal("cannot load config: ", err)
+	}
+
+	testDb, err = pgxpool.New(context.Background(), config.DBSource)
 
 	if err != nil {
 		log.Fatal("Cannot connect to db: ", err)

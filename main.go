@@ -6,16 +6,18 @@ import (
 
 	"github.com/AnkitNayan83/houseBank/api"
 	db "github.com/AnkitNayan83/houseBank/db/sqlc"
+	"github.com/AnkitNayan83/houseBank/util"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const (
-	dbSource      = "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable"
-	serverAddress = "0.0.0.0:8080"
-)
-
 func main() {
-	conn, err := pgxpool.New(context.Background(), dbSource)
+
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config: ", err)
+	}
+
+	conn, err := pgxpool.New(context.Background(), config.DBSource)
 
 	if err != nil {
 		log.Fatal("Cannot connect to db: ", err)
@@ -24,7 +26,7 @@ func main() {
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 
-	err = server.Start(serverAddress)
+	err = server.Start(config.ServerAddress)
 
 	if err != nil {
 		log.Fatal("cannot start server: ", err)

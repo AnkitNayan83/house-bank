@@ -8,22 +8,27 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+type Store interface {
+	Querier
+	TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParams) (TransfeMoneyTxResult, error)
+}
+
 // store provides all the functions to execute db queries and transactions
-type Store struct {
+type SQLStore struct {
 	*Queries
 	db *pgxpool.Pool
 }
 
 // NewStore create a new store from store sturct
-func NewStore(db *pgxpool.Pool) *Store {
-	return &Store{
+func NewStore(db *pgxpool.Pool) Store {
+	return &SQLStore{
 		db:      db,
 		Queries: New(db),
 	}
 }
 
 // execTx executes a function within a database transeaction
-func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
+func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, pgx.TxOptions{})
 
 	if err != nil {
@@ -63,7 +68,7 @@ type TransfeMoneyTxResult struct {
 
 // var txKey = txKetType{}
 
-func (store *Store) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParams) (TransfeMoneyTxResult, error) {
+func (store *SQLStore) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParams) (TransfeMoneyTxResult, error) {
 	var result TransfeMoneyTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
