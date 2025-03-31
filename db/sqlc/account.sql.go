@@ -143,6 +143,39 @@ func (q *Queries) GetAccounts(ctx context.Context, arg GetAccountsParams) ([]Acc
 	return items, nil
 }
 
+const getUsersAccounts = `-- name: GetUsersAccounts :many
+SELECT a.id, a.owner, a.balance, a.currency, a.created_at
+FROM accounts a
+JOIN users u ON u.username = a.owner
+WHERE u.username = $1
+`
+
+func (q *Queries) GetUsersAccounts(ctx context.Context, username string) ([]Account, error) {
+	rows, err := q.db.Query(ctx, getUsersAccounts, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Account{}
+	for rows.Next() {
+		var i Account
+		if err := rows.Scan(
+			&i.ID,
+			&i.Owner,
+			&i.Balance,
+			&i.Currency,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateAccountBalance = `-- name: UpdateAccountBalance :one
 UPDATE accounts
 SET balance = $2

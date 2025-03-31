@@ -15,11 +15,18 @@ createdb:
 dropdb:
 	docker exec -it postgres17 dropdb house_bank
 
+newmigration:
+	migrate create -ext sql -dir db/migration -seq $(name)
+
 migrateup:
 	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose up
+migrateupone:
+	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose up 1
 
 migratedown:
 	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose down
+migratedownone:
+	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose down 1
 
 sqlc:
 	sqlc generate
@@ -34,4 +41,4 @@ mock:
 	mockgen -package mockDB -destination db/mock/store.go github.com/AnkitNayan83/houseBank/db/sqlc Store
 
 
-.PHONY: postgresconsole postgresrun postgresstart postgresstop createdb dropdb migrateup migratedown sqlc test server mock
+.PHONY: postgresconsole postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock

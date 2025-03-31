@@ -18,6 +18,12 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+-- name: GetUsersAccounts :many
+SELECT a.*
+FROM accounts a
+JOIN users u ON u.username = a.owner
+WHERE u.username = $1;
+
 -- name: UpdateAccountBalance :one
 UPDATE accounts
 SET balance = $2

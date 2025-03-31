@@ -9,14 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	account1Id = 1
-	account2Id = 2
-)
-
 func createRandomEntry(t *testing.T) Entry {
+	account1 := createRandomAccount(t)
 	arg := CreateEntryParams{
-		AccountID: account1Id,
+		AccountID: account1.ID,
 		Amount:    util.RandomInt(100, 10000),
 	}
 
@@ -52,8 +48,13 @@ func TestGetEntryById(t *testing.T) {
 }
 
 func TestGetEntriesByAccountId(t *testing.T) {
+	var entries []Entry
+	for range 10 {
+		entry := createRandomEntry(t)
+		entries = append(entries, entry)
+	}
 	arg := GetEntriesByAccountIdParams{
-		AccountID: account1Id,
+		AccountID: entries[0].AccountID,
 		Limit:     5,
 		Offset:    0,
 	}
