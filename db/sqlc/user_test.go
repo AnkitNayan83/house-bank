@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/AnkitNayan83/houseBank/util"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 )
 
@@ -48,4 +49,59 @@ func TestGetUserByUsername(t *testing.T) {
 	require.Equal(t, user.Email, userInDb.Email)
 	require.Equal(t, user.HashedPassword, userInDb.HashedPassword)
 	require.WithinDuration(t, user.CreatedAt.Time, userInDb.CreatedAt.Time, time.Second)
+}
+
+func TestGetUserByEmail(t *testing.T) {
+	user := createRandomUser(t)
+
+	userInDb, err := testQueries.GetUserByEmail(context.Background(), user.Email)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, userInDb)
+
+	require.Equal(t, user.FullName, userInDb.FullName)
+	require.Equal(t, user.Username, userInDb.Username)
+	require.Equal(t, user.Email, userInDb.Email)
+	require.Equal(t, user.HashedPassword, userInDb.HashedPassword)
+	require.WithinDuration(t, user.CreatedAt.Time, userInDb.CreatedAt.Time, time.Second)
+}
+
+func TestChangeUserPassword(t *testing.T) {
+	user := createRandomUser(t)
+
+	arg := ChangePasswordParams{
+		Username:          user.Username,
+		HashedPassword:    util.RandomString(10),
+		PasswordChangedAt: pgtype.Timestamptz{Time: time.Now(), Valid: true},
+	}
+
+	changedUser, err := testQueries.ChangePassword(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, changedUser)
+
+	require.Equal(t, user.FullName, changedUser.FullName)
+	require.Equal(t, user.Username, changedUser.Username)
+	require.Equal(t, user.Email, changedUser.Email)
+	require.Equal(t, arg.HashedPassword, changedUser.HashedPassword)
+	require.WithinDuration(t, user.CreatedAt.Time, changedUser.CreatedAt.Time, time.Second)
+}
+
+func TestUpdateUserEmailVerification(t *testing.T) {
+	user := createRandomUser(t)
+
+	arg := UpdateUserEmailVerificationParams{
+		Username:        user.Username,
+		EmailVerifiedAt: pgtype.Timestamptz{Time: time.Now(), Valid: true},
+	}
+
+	changedUser, err := testQueries.UpdateUserEmailVerification(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, changedUser)
+	require.NotEmpty(t, changedUser.EmailVerifiedAt)
+
+	require.Equal(t, user.FullName, changedUser.FullName)
+	require.Equal(t, user.Username, changedUser.Username)
+	require.Equal(t, user.Email, changedUser.Email)
+	require.Equal(t, user.HashedPassword, changedUser.HashedPassword)
+	require.WithinDuration(t, user.CreatedAt.Time, changedUser.CreatedAt.Time, time.Second)
 }
