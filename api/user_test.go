@@ -110,6 +110,129 @@ func TestCreateUserApi(t *testing.T) {
 				require.Equal(t, recorder.Code, http.StatusForbidden)
 			},
 		},
+		{
+			name: "InternalError",
+			body: gin.H{
+				"username":  user.Username,
+				"full_name": user.FullName,
+				"email":     user.Email,
+				"password":  password,
+			},
+			buildStubs: func(store *mockDB.MockStore) {
+				arg := db.CreateUserParams{
+					Username: user.Username,
+					FullName: user.FullName,
+					Email:    user.Email,
+				}
+				store.EXPECT().
+					CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
+					Times(1).
+					Return(db.User{}, &pgconn.PgError{Code: "1234"})
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, recorder.Code, http.StatusInternalServerError)
+			},
+		},
+		{
+			name: "InvalidRequestBody",
+			body: gin.H{
+				"username":  123,
+				"full_name": user.FullName,
+				"email":     user.Email,
+				"password":  password,
+			},
+			buildStubs: func(store *mockDB.MockStore) {
+				store.EXPECT().
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "MissingUsername",
+			body: gin.H{
+				"full_name": user.FullName,
+				"email":     user.Email,
+				"password":  password,
+			},
+			buildStubs: func(store *mockDB.MockStore) {
+				store.EXPECT().
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "MissingPassword",
+			body: gin.H{
+				"username":  user.Username,
+				"full_name": user.FullName,
+				"email":     user.Email,
+			},
+			buildStubs: func(store *mockDB.MockStore) {
+				store.EXPECT().
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "InvalidEmailFormat",
+			body: gin.H{
+				"username":  user.Username,
+				"full_name": user.FullName,
+				"email":     "invalid-email",
+				"password":  password,
+			},
+			buildStubs: func(store *mockDB.MockStore) {
+				store.EXPECT().
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "ShortPassword",
+			body: gin.H{
+				"username":  user.Username,
+				"full_name": user.FullName,
+				"email":     user.Email,
+				"password":  "123",
+			},
+			buildStubs: func(store *mockDB.MockStore) {
+				store.EXPECT().
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "PasswordHashingError",
+			body: gin.H{
+				"username":  user.Username,
+				"full_name": user.FullName,
+				"email":     user.Email,
+				"password":  string(make([]byte, 73)), // too long password that causes hashing to fail
+			},
+			buildStubs: func(store *mockDB.MockStore) {
+				store.EXPECT().
+					CreateUser(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
 	}
 
 	for i := range testCases {
