@@ -243,7 +243,8 @@ func TestCreateUserApi(t *testing.T) {
 			defer ctrl.Finish()
 			store := mockDB.NewMockStore(ctrl)
 			tc.buildStubs(store)
-			server := NewServer(store)
+			server, err := newTestServer(t, store)
+			require.NoError(t, err)
 			recorder := httptest.NewRecorder()
 
 			url := "/users"

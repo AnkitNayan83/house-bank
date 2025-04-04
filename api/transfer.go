@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	db "github.com/AnkitNayan83/houseBank/db/sqlc"
+	"github.com/AnkitNayan83/houseBank/token"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +25,14 @@ func (server *Server) TransferMoney(ctx *gin.Context) {
 		return
 	}
 
-	account1, err := server.store.GetAccountById(ctx, req.FromAccountID)
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	arg1 := db.GetAccountByIdParams{
+		ID:    req.FromAccountID,
+		Owner: authPayload.Username,
+	}
+
+	account1, err := server.store.GetAccountById(ctx, arg1)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -45,7 +53,12 @@ func (server *Server) TransferMoney(ctx *gin.Context) {
 		return
 	}
 
-	account2, err := server.store.GetAccountById(ctx, req.ToAccountID)
+	arg2 := db.GetAccountByIdParams{
+		ID:    req.ToAccountID,
+		Owner: authPayload.Username,
+	}
+
+	account2, err := server.store.GetAccountById(ctx, arg2)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

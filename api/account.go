@@ -6,12 +6,12 @@ import (
 	"net/http"
 
 	db "github.com/AnkitNayan83/houseBank/db/sqlc"
+	"github.com/AnkitNayan83/houseBank/token"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
 	Currency string `json:"currency" binding:"required,currency"`
 }
 
@@ -22,8 +22,10 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		return
 	}
 
+	username := ctx.MustGet(authorizationPayloadKey).(*token.Payload).Username
+
 	arg := db.CreateAccountParams{
-		Owner:    req.Owner,
+		Owner:    username,
 		Currency: req.Currency,
 	}
 
@@ -58,7 +60,14 @@ func (server *Server) getAccountById(ctx *gin.Context) {
 		return
 	}
 
-	account, err := server.store.GetAccountById(ctx, req.ID)
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	arg := db.GetAccountByIdParams{
+		ID:    req.ID,
+		Owner: authPayload.Username,
+	}
+
+	account, err := server.store.GetAccountById(ctx, arg)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -149,8 +158,15 @@ func (server *Server) deleteAccount(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	arg := db.GetAccountByIdParams{
+		ID:    req.ID,
+		Owner: authPayload.Username,
+	}
+
 	// Check if the account exists before attempting to delete
-	account, err := server.store.GetAccountById(ctx, req.ID)
+	account, err := server.store.GetAccountById(ctx, arg)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

@@ -146,18 +146,18 @@ func (mr *MockStoreMockRecorder) DeleteAccount(ctx, id any) *gomock.Call {
 }
 
 // GetAccountById mocks base method.
-func (m *MockStore) GetAccountById(ctx context.Context, id int64) (db.Account, error) {
+func (m *MockStore) GetAccountById(ctx context.Context, arg db.GetAccountByIdParams) (db.Account, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAccountById", ctx, id)
+	ret := m.ctrl.Call(m, "GetAccountById", ctx, arg)
 	ret0, _ := ret[0].(db.Account)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAccountById indicates an expected call of GetAccountById.
-func (mr *MockStoreMockRecorder) GetAccountById(ctx, id any) *gomock.Call {
+func (mr *MockStoreMockRecorder) GetAccountById(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountById", reflect.TypeOf((*MockStore)(nil).GetAccountById), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountById", reflect.TypeOf((*MockStore)(nil).GetAccountById), ctx, arg)
 }
 
 // GetAccountByIdForUpdate mocks base method.
