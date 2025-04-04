@@ -28,3 +28,11 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 
 	return payload, nil
 }
+
+func (payload *Payload) Valid() error {
+	if payload.ExpiresAt.Before(time.Now()) {
+		return ErrExpiredToken
+	}
+
+	return nil
+}
