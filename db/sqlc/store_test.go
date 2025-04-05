@@ -148,7 +148,6 @@ func TestTransferMoneyTxDL(t *testing.T) {
 
 	for range n {
 		err := <-errs
-
 		require.NoError(t, err)
 	}
 

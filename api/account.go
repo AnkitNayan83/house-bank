@@ -62,12 +62,7 @@ func (server *Server) getAccountById(ctx *gin.Context) {
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 
-	arg := db.GetAccountByIdParams{
-		ID:    req.ID,
-		Owner: authPayload.Username,
-	}
-
-	account, err := server.store.GetAccountById(ctx, arg)
+	account, err := server.store.GetAccountById(ctx, req.ID)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -75,6 +70,11 @@ func (server *Server) getAccountById(ctx *gin.Context) {
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if account.Owner != authPayload.Username {
+		ctx.JSON(http.StatusForbidden, errorResponse(errors.New("account does not belong to the authenticated user")))
 		return
 	}
 
@@ -94,7 +94,10 @@ func (server *Server) getAccounts(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
 	arg := db.GetAccountsParams{
+		Owner:  authPayload.Username,
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
@@ -131,19 +134,37 @@ func (server *Server) updateAccountBalance(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	account, err := server.store.GetAccountById(ctx, uriReq.ID)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if account.Owner != authPayload.Username {
+		ctx.JSON(http.StatusForbidden, errorResponse(errors.New("account does not belong to the authenticated user")))
+		return
+	}
+
 	arg := db.AddAccountBalanceParams{
 		ID:     uriReq.ID,
 		Amount: bodyReq.Amount,
 	}
 
-	account, err := server.store.AddAccountBalance(ctx, arg)
+	updatedAccount, err := server.store.AddAccountBalance(ctx, arg)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, account)
+	ctx.JSON(http.StatusOK, updatedAccount)
 }
 
 type deleteAccountRequest struct {
@@ -160,13 +181,12 @@ func (server *Server) deleteAccount(ctx *gin.Context) {
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 
-	arg := db.GetAccountByIdParams{
-		ID:    req.ID,
-		Owner: authPayload.Username,
-	}
-
 	// Check if the account exists before attempting to delete
-	account, err := server.store.GetAccountById(ctx, arg)
+	account, err := server.store.GetAccountById(ctx, req.ID)
+
+	if account.Owner != authPayload.Username {
+		ctx.JSON(http.StatusForbidden, errorResponse(errors.New("account does not belong to the authenticated user")))
+	}
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

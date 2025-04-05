@@ -27,12 +27,7 @@ func (server *Server) TransferMoney(ctx *gin.Context) {
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 
-	arg1 := db.GetAccountByIdParams{
-		ID:    req.FromAccountID,
-		Owner: authPayload.Username,
-	}
-
-	account1, err := server.store.GetAccountById(ctx, arg1)
+	account1, err := server.store.GetAccountById(ctx, req.FromAccountID)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -40,6 +35,11 @@ func (server *Server) TransferMoney(ctx *gin.Context) {
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if account1.Owner != authPayload.Username {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(fmt.Errorf("account: [%d] does not belong to the authenticated user", account1.ID)))
 		return
 	}
 
@@ -53,12 +53,7 @@ func (server *Server) TransferMoney(ctx *gin.Context) {
 		return
 	}
 
-	arg2 := db.GetAccountByIdParams{
-		ID:    req.ToAccountID,
-		Owner: authPayload.Username,
-	}
-
-	account2, err := server.store.GetAccountById(ctx, arg2)
+	account2, err := server.store.GetAccountById(ctx, req.ToAccountID)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

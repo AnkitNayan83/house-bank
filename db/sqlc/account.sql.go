@@ -70,16 +70,11 @@ func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
 
 const getAccountById = `-- name: GetAccountById :one
 SELECT id, owner, balance, currency, created_at FROM accounts
-WHERE id = $1 AND owner = $2 LIMIT 1
+WHERE id = $1 LIMIT 1
 `
 
-type GetAccountByIdParams struct {
-	ID    int64  `json:"id"`
-	Owner string `json:"owner"`
-}
-
-func (q *Queries) GetAccountById(ctx context.Context, arg GetAccountByIdParams) (Account, error) {
-	row := q.db.QueryRow(ctx, getAccountById, arg.ID, arg.Owner)
+func (q *Queries) GetAccountById(ctx context.Context, id int64) (Account, error) {
+	row := q.db.QueryRow(ctx, getAccountById, id)
 	var i Account
 	err := row.Scan(
 		&i.ID,
@@ -112,18 +107,20 @@ func (q *Queries) GetAccountByIdForUpdate(ctx context.Context, id int64) (Accoun
 
 const getAccounts = `-- name: GetAccounts :many
 SELECT id, owner, balance, currency, created_at FROM accounts
+WHERE owner = $1
 ORDER BY id
-LIMIT $1
-OFFSET $2
+LIMIT $2
+OFFSET $3
 `
 
 type GetAccountsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Owner  string `json:"owner"`
+	Limit  int32  `json:"limit"`
+	Offset int32  `json:"offset"`
 }
 
 func (q *Queries) GetAccounts(ctx context.Context, arg GetAccountsParams) ([]Account, error) {
-	rows, err := q.db.Query(ctx, getAccounts, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getAccounts, arg.Owner, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
