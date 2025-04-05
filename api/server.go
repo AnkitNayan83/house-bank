@@ -59,12 +59,12 @@ func (server *Server) setupServerRoutes() {
 	// accounts routes
 	authRoutes.POST("/accounts", server.createAccount)
 	authRoutes.GET("/accounts/:id", server.getAccountById)
-	authRoutes.GET("/accounts", authMiddleware(server.tokenMaker), server.getAccounts)
+	authRoutes.GET("/accounts", server.getAccounts)
 	authRoutes.PATCH("/accounts/:id", server.updateAccountBalance)
 	authRoutes.DELETE("/accounts/:id", server.deleteAccount)
 
 	// transactions routes
-	router.POST("/transfers", server.TransferMoney)
+	authRoutes.POST("/transfers", server.TransferMoney)
 
 	server.router = router
 }

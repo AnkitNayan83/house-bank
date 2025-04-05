@@ -184,16 +184,17 @@ func (server *Server) deleteAccount(ctx *gin.Context) {
 	// Check if the account exists before attempting to delete
 	account, err := server.store.GetAccountById(ctx, req.ID)
 
-	if account.Owner != authPayload.Username {
-		ctx.JSON(http.StatusForbidden, errorResponse(errors.New("account does not belong to the authenticated user")))
-	}
-
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if account.Owner != authPayload.Username {
+		ctx.JSON(http.StatusForbidden, errorResponse(errors.New("account does not belong to the authenticated user")))
 		return
 	}
 
