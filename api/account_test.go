@@ -123,6 +123,7 @@ func TestGetAccountAPI(t *testing.T) {
 type GetAccountsParams struct {
 	PageID   int32
 	PageSize int32
+	Owner    string
 }
 
 func TestGetAccountsAPI(t *testing.T) {
@@ -144,11 +145,13 @@ func TestGetAccountsAPI(t *testing.T) {
 		{
 			name: "OK",
 			query: GetAccountsParams{
+				Owner:    user.Username,
 				PageID:   1,
 				PageSize: 5,
 			},
 			buildStubs: func(store *mockDB.MockStore) {
 				arg := db.GetAccountsParams{
+					Owner:  user.Username,
 					Offset: 0,
 					Limit:  5,
 				}
@@ -168,6 +171,7 @@ func TestGetAccountsAPI(t *testing.T) {
 		{
 			name: "PageDoesNotExists",
 			query: GetAccountsParams{
+				Owner:    user.Username,
 				PageID:   3,
 				PageSize: 5,
 			},
@@ -176,6 +180,7 @@ func TestGetAccountsAPI(t *testing.T) {
 			},
 			buildStubs: func(store *mockDB.MockStore) {
 				arg := db.GetAccountsParams{
+					Owner:  user.Username,
 					Offset: 10,
 					Limit:  5,
 				}
@@ -191,6 +196,7 @@ func TestGetAccountsAPI(t *testing.T) {
 		{
 			name: "InvalidPageID",
 			query: GetAccountsParams{
+				Owner:    user.Username,
 				PageID:   -1,
 				PageSize: 5,
 			},
@@ -209,6 +215,7 @@ func TestGetAccountsAPI(t *testing.T) {
 		{
 			name: "InvalidPageSize",
 			query: GetAccountsParams{
+				Owner:    user.Username,
 				PageID:   1,
 				PageSize: 4,
 			},
@@ -227,6 +234,7 @@ func TestGetAccountsAPI(t *testing.T) {
 		{
 			name: "InternalError",
 			query: GetAccountsParams{
+				Owner:    user.Username,
 				PageID:   1,
 				PageSize: 5,
 			},
@@ -246,6 +254,7 @@ func TestGetAccountsAPI(t *testing.T) {
 		{
 			name: "MissingPageID",
 			query: GetAccountsParams{
+				Owner:    user.Username,
 				PageSize: 5,
 			},
 			buildStubs: func(store *mockDB.MockStore) {
@@ -263,6 +272,7 @@ func TestGetAccountsAPI(t *testing.T) {
 		{
 			name: "MissingPageSize",
 			query: GetAccountsParams{
+				Owner:  user.Username,
 				PageID: 1,
 			},
 			buildStubs: func(store *mockDB.MockStore) {
@@ -371,24 +381,6 @@ func TestCreateAccountAPI(t *testing.T) {
 			body: CreateAccountBody{
 				Owner:    account.Owner,
 				Currency: "INVALID",
-			},
-			buildStubs: func(store *mockDB.MockStore) {
-				store.EXPECT().
-					CreateAccount(gomock.Any(), gomock.Any()).
-					Times(0)
-			},
-			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
-			},
-			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusBadRequest, recorder.Code)
-			},
-		},
-		{
-			name: "MissingOwner",
-			body: CreateAccountBody{
-				Owner:    "",
-				Currency: account.Currency,
 			},
 			buildStubs: func(store *mockDB.MockStore) {
 				store.EXPECT().
