@@ -40,5 +40,8 @@ server:
 mock:
 	mockgen -package mockDB -destination db/mock/store.go github.com/AnkitNayan83/houseBank/db/sqlc Store
 
+builddocker:
+	docker build -t housebank:latest .
+
 
 .PHONY: postgresconsole postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock
