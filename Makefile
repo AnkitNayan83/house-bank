@@ -1,7 +1,7 @@
 postgresconsole:
 	docker exec -it postgres17 psql -U root -d house_bank
 postgresrun:
-	docker run --name postgres17 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=postgres -d postgres:17-alpine
+	docker run --name postgres17 --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=postgres -d postgres:17-alpine
 
 postgresstart:
 	docker start postgres17
@@ -40,8 +40,8 @@ server:
 mock:
 	mockgen -package mockDB -destination db/mock/store.go github.com/AnkitNayan83/houseBank/db/sqlc Store
 
-builddocker:
+image:
 	docker build -t housebank:latest .
 
 
-.PHONY: postgresconsole postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock
+.PHONY: postgresconsole image postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock
