@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=root
+      - POSTGRES_DB=house_bank
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SOURCE=postgresql://root:postgres@postgres:5432/house_bank?sslmode=disable
+    depends_on:
+      - postgres
+    entrypoint: [ "/app/wait-for.sh", "postgres:5432", "--", /app/start.sh ]
+    command: [ "/app/main" ]
