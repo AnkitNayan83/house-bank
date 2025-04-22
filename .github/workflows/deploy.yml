@@ -27,6 +27,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Load secrets
+        run: aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-1:812541448862:secret:house_bank_env-XK1TEQ --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
+
       - name: Build, tag and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
