@@ -10,4 +10,4 @@ CREATE TABLE "sessions" (
 );
 
 CREATE INDEX ON "sessions" ("username");
-ALTER TABLE "sessions" ADD FOREIGN KEY ("username") REFERENCES "user" ("username");
+ALTER TABLE "sessions" ADD FOREIGN KEY ("username") REFERENCES "users" ("username");

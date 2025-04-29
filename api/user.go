@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	db "github.com/AnkitNayan83/houseBank/db/sqlc"
 	"github.com/AnkitNayan83/houseBank/util"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -25,8 +27,8 @@ type createUserResponse struct {
 	FullName          string             `json:"full_name"`
 	Email             string             `json:"email"`
 	EmailVerifiedAt   pgtype.Timestamptz `json:"email_verified_at"`
-	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
-	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	PasswordChangedAt time.Time          `json:"password_changed_at"`
+	CreatedAt         time.Time          `json:"created_at"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -78,11 +80,6 @@ func (server *Server) createUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, rsp)
 }
 
-type loginUserRequest struct {
-	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required"`
-}
-
 func newUserResponse(user db.User) createUserResponse {
 	return createUserResponse{
 		Username:          user.Username,
@@ -92,6 +89,20 @@ func newUserResponse(user db.User) createUserResponse {
 		PasswordChangedAt: user.PasswordChangedAt,
 		CreatedAt:         user.CreatedAt,
 	}
+}
+
+type loginUserRequest struct {
+	Username string `json:"username" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required"`
+}
+
+type loginUserResponse struct {
+	SessionID             uuid.UUID          `json:"session_id"`
+	AccessToken           string             `json:"access_token"`
+	AccessTokenExpiredAt  time.Time          `json:"access_token_expired_at"`
+	RefreshToken          string             `json:"refresh_token"`
+	RefreshTokenExpiredAt time.Time          `json:"refresh_token_expired_at"`
+	User                  createUserResponse `json:"user"`
 }
 
 func (server *Server) loginUser(ctx *gin.Context) {
@@ -119,15 +130,43 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, err := server.tokenMaker.CreateToken(user.Username, server.config.ACCESS_TOKEN_DURATION)
+	accessToken, accessTokenPayload, err := server.tokenMaker.CreateToken(user.Username, server.config.ACCESS_TOKEN_DURATION)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"access_token": accessToken,
-		"user":         newUserResponse(user),
+	refreshToken, refreshTokenPayload, err := server.tokenMaker.CreateToken(user.Username, server.config.REFRESH_TOKEN_DURATION)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	session, err := server.store.CreateSession(ctx, db.CreateSessionParams{
+		ID:           refreshTokenPayload.ID,
+		Username:     user.Username,
+		RefreshToken: refreshToken,
+		UserAgent:    ctx.Request.UserAgent(),
+		ClientID:     ctx.ClientIP(),
+		IsBlocked:    false,
+		ExpiredAt:    refreshTokenPayload.ExpiresAt,
 	})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	res := loginUserResponse{
+		SessionID:             session.ID,
+		AccessToken:           accessToken,
+		AccessTokenExpiredAt:  accessTokenPayload.ExpiresAt,
+		RefreshToken:          refreshToken,
+		RefreshTokenExpiredAt: refreshTokenPayload.ExpiresAt,
+		User:                  newUserResponse(user),
+	}
+
+	ctx.JSON(http.StatusOK, res)
 }

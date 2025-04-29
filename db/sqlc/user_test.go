@@ -51,7 +51,7 @@ func TestGetUserByUsername(t *testing.T) {
 	require.Equal(t, user.Username, userInDb.Username)
 	require.Equal(t, user.Email, userInDb.Email)
 	require.Equal(t, user.HashedPassword, userInDb.HashedPassword)
-	require.WithinDuration(t, user.CreatedAt.Time, userInDb.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, user.CreatedAt, userInDb.CreatedAt, time.Second)
 }
 
 func TestGetUserByEmail(t *testing.T) {
@@ -66,7 +66,7 @@ func TestGetUserByEmail(t *testing.T) {
 	require.Equal(t, user.Username, userInDb.Username)
 	require.Equal(t, user.Email, userInDb.Email)
 	require.Equal(t, user.HashedPassword, userInDb.HashedPassword)
-	require.WithinDuration(t, user.CreatedAt.Time, userInDb.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, user.CreatedAt, userInDb.CreatedAt, time.Second)
 }
 
 func TestChangeUserPassword(t *testing.T) {
@@ -75,7 +75,7 @@ func TestChangeUserPassword(t *testing.T) {
 	arg := ChangePasswordParams{
 		Username:          user.Username,
 		HashedPassword:    util.RandomString(10),
-		PasswordChangedAt: pgtype.Timestamptz{Time: time.Now(), Valid: true},
+		PasswordChangedAt: time.Now(),
 	}
 
 	changedUser, err := testQueries.ChangePassword(context.Background(), arg)
@@ -86,7 +86,7 @@ func TestChangeUserPassword(t *testing.T) {
 	require.Equal(t, user.Username, changedUser.Username)
 	require.Equal(t, user.Email, changedUser.Email)
 	require.Equal(t, arg.HashedPassword, changedUser.HashedPassword)
-	require.WithinDuration(t, user.CreatedAt.Time, changedUser.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, user.CreatedAt, changedUser.CreatedAt, time.Second)
 }
 
 func TestUpdateUserEmailVerification(t *testing.T) {
@@ -106,5 +106,5 @@ func TestUpdateUserEmailVerification(t *testing.T) {
 	require.Equal(t, user.Username, changedUser.Username)
 	require.Equal(t, user.Email, changedUser.Email)
 	require.Equal(t, user.HashedPassword, changedUser.HashedPassword)
-	require.WithinDuration(t, user.CreatedAt.Time, changedUser.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, user.CreatedAt, changedUser.CreatedAt, time.Second)
 }

@@ -19,14 +19,14 @@ newmigration:
 	migrate create -ext sql -dir db/migration -seq $(name)
 
 migrateup:
-	migrate -path db/migration -database "postgresql://house_bank_owner:npg_b3kd4pvQoqEy@ep-mute-glitter-a4sca5g7-pooler.us-east-1.aws.neon.tech/house_bank?sslmode=require" -verbose up
+	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose up
 migrateupone:
-	migrate -path db/migration -database "postgresql://house_bank_owner:npg_b3kd4pvQoqEy@ep-mute-glitter-a4sca5g7-pooler.us-east-1.aws.neon.tech/house_bank?sslmode=require" -verbose up 1
+	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose up 1
 
 migratedown:
-	migrate -path db/migration -database "postgresql://house_bank_owner:npg_b3kd4pvQoqEy@ep-mute-glitter-a4sca5g7-pooler.us-east-1.aws.neon.tech/house_bank?sslmode=require" -verbose down
+	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose down
 migratedownone:
-	migrate -path db/migration -database "postgresql://house_bank_owner:npg_b3kd4pvQoqEy@ep-mute-glitter-a4sca5g7-pooler.us-east-1.aws.neon.tech/house_bank?sslmode=require" -verbose down 1
+	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose down 1
 
 sqlc:
 	sqlc generate

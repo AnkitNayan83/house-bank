@@ -445,7 +445,7 @@ func requireBodyMatchAccount(t *testing.T, body *bytes.Buffer, account db.Accoun
 	require.Equal(t, account.Owner, gotAccount.Owner)
 	require.Equal(t, account.Balance, gotAccount.Balance)
 	require.Equal(t, account.Currency, gotAccount.Currency)
-	require.WithinDuration(t, account.CreatedAt.Time, gotAccount.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, account.CreatedAt, gotAccount.CreatedAt, time.Second)
 }
 
 func requireBodyMatchAccounts(t *testing.T, body *bytes.Buffer, accounts []db.Account) {
@@ -463,6 +463,6 @@ func requireBodyMatchAccounts(t *testing.T, body *bytes.Buffer, accounts []db.Ac
 		require.Equal(t, accounts[i].Owner, gotAccounts[i].Owner)
 		require.Equal(t, accounts[i].Balance, gotAccounts[i].Balance)
 		require.Equal(t, accounts[i].Currency, gotAccounts[i].Currency)
-		require.WithinDuration(t, accounts[i].CreatedAt.Time, gotAccounts[i].CreatedAt.Time, time.Second)
+		require.WithinDuration(t, accounts[i].CreatedAt, gotAccounts[i].CreatedAt, time.Second)
 	}
 }

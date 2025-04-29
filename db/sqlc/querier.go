@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
@@ -13,6 +15,7 @@ type Querier interface {
 	ChangePassword(ctx context.Context, arg ChangePasswordParams) (User, error)
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
 	CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAccount(ctx context.Context, id int64) error
@@ -23,11 +26,13 @@ type Querier interface {
 	GetAllTransfersBetweenTwoAccounts(ctx context.Context, arg GetAllTransfersBetweenTwoAccountsParams) ([]Transfer, error)
 	GetEntriesByAccountId(ctx context.Context, arg GetEntriesByAccountIdParams) ([]Entry, error)
 	GetEntryById(ctx context.Context, id int64) (Entry, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTransferById(ctx context.Context, id int64) (Transfer, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUsersAccounts(ctx context.Context, username string) ([]Account, error)
 	UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) (Account, error)
+	UpdateSession(ctx context.Context, id uuid.UUID) error
 	UpdateUserEmailVerification(ctx context.Context, arg UpdateUserEmailVerificationParams) (User, error)
 }
 

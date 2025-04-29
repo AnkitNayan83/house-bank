@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -19,9 +20,9 @@ RETURNING username, hashed_password, full_name, email, email_verified_at, passwo
 `
 
 type ChangePasswordParams struct {
-	Username          string             `json:"username"`
-	HashedPassword    string             `json:"hashed_password"`
-	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
+	Username          string    `json:"username"`
+	HashedPassword    string    `json:"hashed_password"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
 }
 
 func (q *Queries) ChangePassword(ctx context.Context, arg ChangePasswordParams) (User, error) {
