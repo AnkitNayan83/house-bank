@@ -7,10 +7,11 @@ import (
 )
 
 type Config struct {
-	DBSource              string        `mapstructure:"DB_SOURCE"`
-	ServerAddress         string        `mapstructure:"SERVER_ADDRESS"`
-	TOKEN_SYMMETRIC_KEY   string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
-	ACCESS_TOKEN_DURATION time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	DBSource               string        `mapstructure:"DB_SOURCE"`
+	ServerAddress          string        `mapstructure:"SERVER_ADDRESS"`
+	TOKEN_SYMMETRIC_KEY    string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	ACCESS_TOKEN_DURATION  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	REFRESH_TOKEN_DURATION time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

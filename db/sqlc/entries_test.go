@@ -44,7 +44,7 @@ func TestGetEntryById(t *testing.T) {
 	require.Equal(t, entry.ID, entryInDb.ID)
 	require.Equal(t, entry.AccountID, entryInDb.AccountID)
 	require.Equal(t, entry.Amount, entryInDb.Amount)
-	require.WithinDuration(t, entry.CreatedAt.Time, entryInDb.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, entry.CreatedAt, entryInDb.CreatedAt, time.Second)
 }
 
 func TestGetEntriesByAccountId(t *testing.T) {

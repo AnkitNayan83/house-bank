@@ -45,7 +45,9 @@ jobs:
         which migrate
 
     - name: Load secrets
-      run: aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-1:812541448862:secret:house_bank_env-XK1TEQ --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
+      run: |
+        rm -rf app.env # Remove any existing file or directory named app.env
+        aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-1:812541448862:secret:house_bank_env-XK1TEQ --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
 
 
     - name: Run migrations
