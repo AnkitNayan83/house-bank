@@ -1,0 +1,96 @@
+Project HouseBank {
+  database_type: 'PostgreSQL'
+  project_description: 'A secure banking system with user authentication, account management, transaction tracking, and session handling capabilities.'
+  version: '1.0.0'
+  author: 'System Developer'
+  created_date: '2025-04-30'
+  architecture: 'Microservice'
+  security_level: 'High'
+  Note: '''
+    # Banking System Database
+    
+    This database design supports a banking application with the following features:
+    
+    * **User Management**: Secure user registration and authentication
+    * **Account Management**: Support for multiple accounts per user with different currencies
+    * **Transaction Tracking**: Records all money movements with entries and transfers
+    * **Session Handling**: Manages user sessions with refresh tokens for security
+    
+    The schema follows financial best practices including double-entry accounting
+    and ensures data integrity through appropriate relationships and constraints.
+  '''
+}
+
+
+Table "users" {
+  "username" varchar [pk]
+  "hashed_password" varchar [not null]
+  "full_name" varchar [not null]
+  "email" varchar [not null]
+  "emailVerified" timestampz
+  "password_changed_at" timestampz [not null, default: '0001-01-01 00:00:00Z']
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "accounts" {
+  "id" bigserial [pk, increment]
+  "owner" varchar [not null]
+  "balance" bigint [not null]
+  "currency" varchar [not null]
+  "created_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    owner
+    (owner, currency) [unique]
+  }
+}
+
+Table "entries" {
+  "id" bigserial [pk, increment]
+  "account_id" bigint [not null]
+  "amount" bigint [not null, note: 'can be negative or positive']
+  "created_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    account_id
+  }
+}
+
+Table "transfers" {
+  "id" bigserial [pk, increment]
+  "from_account_id" bigint [not null]
+  "to_account_id" bigint [not null]
+  "amount" bigint [not null, note: 'must be positive']
+  "created_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    from_account_id
+    to_account_id
+    (from_account_id, to_account_id)
+  }
+}
+
+Table "session" {
+  "id" bigserial [pk, increment]
+  "username" varchar [not null]
+  "refresh_token" varchar [not null]
+  "user_agent" varchar [not null]
+  "client_id" varchar [not null]
+  "is_blocked" boolean [not null, default: false]
+  "created_at" timestamptz [not null, default: `now()`]
+  "expired_at" timestamptz [not null]
+
+   Indexes {
+    username
+  }
+}
+
+Ref:"users"."username" < "accounts"."owner"
+
+Ref:"accounts"."id" < "entries"."account_id"
+
+Ref:"accounts"."id" < "transfers"."from_account_id"
+
+Ref:"accounts"."id" < "transfers"."to_account_id"
+
+Ref: "users"."username" < "session"."username" 
