@@ -1,3 +1,5 @@
+DB_URL=postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable
+
 postgresconsole:
 	docker exec -it postgres17 psql -U root -d house_bank
 postgresrun:
@@ -19,14 +21,14 @@ newmigration:
 	migrate create -ext sql -dir db/migration -seq $(name)
 
 migrateup:
-	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose up
+	migrate -path db/migration -database "$(DB_URL)" -verbose up
 migrateupone:
-	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose up 1
+	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
 
 migratedown:
-	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose down
+	migrate -path db/migration -database "$(DB_URL)" -verbose down
 migratedownone:
-	migrate -path db/migration -database "postgresql://root:postgres@localhost:5432/house_bank?sslmode=disable" -verbose down 1
+	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
 sqlc:
 	sqlc generate
@@ -42,6 +44,12 @@ mock:
 
 image:
 	docker build -t housebank:latest .
+
+schema:
+	dbml2sql --postgres -o doc/schema.sql doc/db.dbml
+
+dbdos:
+	dbdocs build ./doc/db.dbml
 
 
 .PHONY: postgresconsole image postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock
