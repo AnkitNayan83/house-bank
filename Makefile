@@ -51,5 +51,10 @@ schema:
 dbdos:
 	dbdocs build ./doc/db.dbml
 
+proto:
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+    --go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+    proto/*.proto
 
-.PHONY: postgresconsole image postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock
+
+.PHONY: postgresconsole image postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock proto
