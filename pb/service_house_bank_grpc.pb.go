@@ -73,9 +73,7 @@ type HouseBankServer interface {
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedHouseBankServer struct{
-	
-}
+type UnimplementedHouseBankServer struct{}
 
 func (UnimplementedHouseBankServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
