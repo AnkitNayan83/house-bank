@@ -51,5 +51,17 @@ schema:
 dbdos:
 	dbdocs build ./doc/db.dbml
 
+proto:
+	rm -f pb/*.go
+	rm -f doc/swagger/*.json
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+    --go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+	--grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative \
+	--openapiv2_out=doc/swagger --openapiv2_opt=allow_merge=true,merge_file_name=house_bank \
+    proto/*.proto
 
-.PHONY: postgresconsole image postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock
+evans:
+	evans --host localhost --port 8000 --reflection --repl
+
+
+.PHONY: postgresconsole image postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock proto evans

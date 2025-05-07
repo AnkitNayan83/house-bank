@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/api/annotations.proto";
+import "rpc_create_user.proto";
+import "rpc_login_user.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/AnkitNayan83/houseBank/pb";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+      title: "HouseBank API"
+      version: "1.0"
+      contact: {
+        name: "Ankit Nayan"
+        url: "https://github.com/AnkitNayan83"
+        email: "ankitnayan83@gmail.com"
+      }
+    };
+};
+
+
+service HouseBank {
+    rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/user"
+            body: "*"
+        };
+    };
+    rpc LoginUser (LoginUserRequest) returns (LoginUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/user/login"
+            body: "*"
+        };
+    };
+}
