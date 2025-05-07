@@ -5,8 +5,8 @@ HouseBank is a backend service for managing user accounts, transactions, and aut
 The project uses SQLC for database query generation, AWS ECR for container image storage, AWS EKS for Kubernetes-based deployment, AWS RDS for database management, and AWS Secrets Manager for secure storage of sensitive information.
 
 ## DB docs:
-- [Db Docs]("https://dbdocs.io/ankitnayan83/HouseBank")
-- [Api Docs]("https://app.swaggerhub.com/apis-docs/personal-05c/House_Bank_Api/1.0)
+- [Db Docs](https://dbdocs.io/ankitnayan83/HouseBank)
+- [Api Docs](https://app.swaggerhub.com/apis-docs/personal-05c/House_Bank_Api/1.0)
 
 ## Features
 

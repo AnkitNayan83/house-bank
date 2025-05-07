@@ -23,6 +23,8 @@
   "paths": {
     "/v1/user": {
       "post": {
+        "summary": "Create User",
+        "description": "Use this endpoint to create a new user in the HouseBank system",
         "operationId": "HouseBank_CreateUser",
         "responses": {
           "200": {
@@ -55,6 +57,8 @@
     },
     "/v1/user/login": {
       "post": {
+        "summary": "Login User",
+        "description": "Use this endpoint to login a user in the HouseBank system",
         "operationId": "HouseBank_LoginUser",
         "responses": {
           "200": {

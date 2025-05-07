@@ -59,6 +59,7 @@ proto:
 	--grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative \
 	--openapiv2_out=doc/swagger --openapiv2_opt=allow_merge=true,merge_file_name=house_bank \
     proto/*.proto
+	statik -src=./doc/swagger -dest=./doc
 
 evans:
 	evans --host localhost --port 8000 --reflection --repl
