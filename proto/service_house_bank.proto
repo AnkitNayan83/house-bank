@@ -28,11 +28,19 @@ service HouseBank {
             post: "/v1/user"
             body: "*"
         };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "Use this endpoint to create a new user in the HouseBank system"
+            summary: "Create User"
+        };      
     };
     rpc LoginUser (LoginUserRequest) returns (LoginUserResponse) {
         option (google.api.http) = {
             post: "/v1/user/login"
             body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "Use this endpoint to login a user in the HouseBank system"
+            summary: "Login User"
         };
     };
 }
