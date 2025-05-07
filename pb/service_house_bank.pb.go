@@ -7,6 +7,7 @@
 package pb
 
 import (
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -25,11 +26,13 @@ var File_service_house_bank_proto protoreflect.FileDescriptor
 
 const file_service_house_bank_proto_rawDesc = "" +
 	"\n" +
-	"\x18service_house_bank.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x14rpc_login_user.proto2\xb2\x01\n" +
+	"\x18service_house_bank.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x14rpc_login_user.proto\x1a.protoc-gen-openapiv2/options/annotations.proto2\xb2\x01\n" +
 	"\tHouseBank\x12P\n" +
 	"\n" +
 	"CreateUser\x12\x15.pb.CreateUserRequest\x1a\x16.pb.CreateUserResponse\"\x13\x82\xd3\xe4\x93\x02\r:\x01*\"\b/v1/user\x12S\n" +
-	"\tLoginUser\x12\x14.pb.LoginUserRequest\x1a\x15.pb.LoginUserResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/user/loginB&Z$github.com/AnkitNayan83/houseBank/pbb\x06proto3"
+	"\tLoginUser\x12\x14.pb.LoginUserRequest\x1a\x15.pb.LoginUserResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/user/loginB\x87\x01\x92A^\x12\\\n" +
+	"\rHouseBank API\"F\n" +
+	"\vAnkit Nayan\x12\x1fhttps://github.com/AnkitNayan83\x1a\x16ankitnayan83@gmail.com2\x031.0Z$github.com/AnkitNayan83/houseBank/pbb\x06proto3"
 
 var file_service_house_bank_proto_goTypes = []any{
 	(*CreateUserRequest)(nil),  // 0: pb.CreateUserRequest
