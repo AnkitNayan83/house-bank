@@ -7,12 +7,20 @@ import (
 	db "github.com/AnkitNayan83/houseBank/db/sqlc"
 	"github.com/AnkitNayan83/houseBank/pb"
 	"github.com/AnkitNayan83/houseBank/util"
+	"github.com/AnkitNayan83/houseBank/validators"
 	"github.com/jackc/pgx/v5/pgconn"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (res *pb.CreateUserResponse, err error) {
+
+	violations := validateCreateUserRequest(req)
+
+	if violations != nil {
+		return nil, invalidArgumentError(violations)
+	}
 
 	hashedPassword, err := util.HashPassword(req.GetPassword()) // using get is safer than using req.Password because it will not panic if the field is not set
 
@@ -46,4 +54,24 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	return res, nil
+}
+
+func validateCreateUserRequest(req *pb.CreateUserRequest) (violations []*errdetails.BadRequest_FieldViolation) {
+	if err := validators.ValidateUsername(req.GetUsername()); err != nil {
+		violations = append(violations, fieldViolation("username", err))
+	}
+
+	if err := validators.ValidateFullname(req.GetFullName()); err != nil {
+		violations = append(violations, fieldViolation("full_name", err))
+	}
+
+	if err := validators.ValidateEmail(req.GetEmail()); err != nil {
+		violations = append(violations, fieldViolation("email", err))
+	}
+
+	if err := validators.ValidatePassword(req.GetPassword()); err != nil {
+		violations = append(violations, fieldViolation("password", err))
+	}
+
+	return violations
 }
