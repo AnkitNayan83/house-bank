@@ -5,6 +5,7 @@ package pb;
 import "google/api/annotations.proto";
 import "rpc_create_user.proto";
 import "rpc_login_user.proto";
+import "rpc_update_user.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/AnkitNayan83/houseBank/pb";
@@ -41,6 +42,16 @@ service HouseBank {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             description: "Use this endpoint to login a user in the HouseBank system"
             summary: "Login User"
+        };
+    };
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
+        option (google.api.http) = {
+            patch: "/v1/user"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "Use this endpoint to update a user in the HouseBank system"
+            summary: "Update User"
         };
     };
 }
