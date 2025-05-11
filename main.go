@@ -41,6 +41,7 @@ func main() {
 	runDbMigration(config.MigrationURL, config.DBSource)
 
 	store := db.NewStore(conn)
+	go runGinServer(store, config)
 	go runGatewayServer(store, config)
 	runGRPCServer(store, config)
 
@@ -67,7 +68,7 @@ func runGinServer(store db.Store, config util.Config) {
 		log.Fatal("cannot create http server: ", err)
 	}
 
-	err = server.Start(config.HttpServerAddress)
+	err = server.Start(config.GinServerAddress)
 
 	if err != nil {
 		log.Fatal("cannot start http server: ", err)

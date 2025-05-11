@@ -7,38 +7,9 @@ package db
 
 import (
 	"context"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
-
-const changePassword = `-- name: ChangePassword :one
-UPDATE users 
-SET hashed_password = $2, password_changed_at = $3
-WHERE username = $1
-RETURNING username, hashed_password, full_name, email, email_verified_at, password_changed_at, created_at
-`
-
-type ChangePasswordParams struct {
-	Username          string    `json:"username"`
-	HashedPassword    string    `json:"hashed_password"`
-	PasswordChangedAt time.Time `json:"password_changed_at"`
-}
-
-func (q *Queries) ChangePassword(ctx context.Context, arg ChangePasswordParams) (User, error) {
-	row := q.db.QueryRow(ctx, changePassword, arg.Username, arg.HashedPassword, arg.PasswordChangedAt)
-	var i User
-	err := row.Scan(
-		&i.Username,
-		&i.HashedPassword,
-		&i.FullName,
-		&i.Email,
-		&i.EmailVerifiedAt,
-		&i.PasswordChangedAt,
-		&i.CreatedAt,
-	)
-	return i, err
-}
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
@@ -121,20 +92,37 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 	return i, err
 }
 
-const updateUserEmailVerification = `-- name: UpdateUserEmailVerification :one
-UPDATE users 
-set email_verified_at = $2
+const updateUser = `-- name: UpdateUser :one
+UPDATE users
+SET
+    username = COALESCE($1, username),
+    full_name = COALESCE($2, full_name),
+    email = COALESCE($3, email),
+    email_verified_at = COALESCE($4, email_verified_at),
+    password_changed_at = COALESCE($5, password_changed_at),
+    hashed_password = COALESCE($6, hashed_password)
 WHERE username = $1
 RETURNING username, hashed_password, full_name, email, email_verified_at, password_changed_at, created_at
 `
 
-type UpdateUserEmailVerificationParams struct {
-	Username        string             `json:"username"`
-	EmailVerifiedAt pgtype.Timestamptz `json:"email_verified_at"`
+type UpdateUserParams struct {
+	Username          pgtype.Text        `json:"username"`
+	FullName          pgtype.Text        `json:"full_name"`
+	Email             pgtype.Text        `json:"email"`
+	EmailVerifiedAt   pgtype.Timestamptz `json:"email_verified_at"`
+	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
+	HashedPassword    pgtype.Text        `json:"hashed_password"`
 }
 
-func (q *Queries) UpdateUserEmailVerification(ctx context.Context, arg UpdateUserEmailVerificationParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUserEmailVerification, arg.Username, arg.EmailVerifiedAt)
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUser,
+		arg.Username,
+		arg.FullName,
+		arg.Email,
+		arg.EmailVerifiedAt,
+		arg.PasswordChangedAt,
+		arg.HashedPassword,
+	)
 	var i User
 	err := row.Scan(
 		&i.Username,

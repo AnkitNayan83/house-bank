@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/AnkitNayan83/houseBank/util"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 )
 
@@ -72,32 +71,31 @@ func TestGetUserByEmail(t *testing.T) {
 func TestChangeUserPassword(t *testing.T) {
 	user := createRandomUser(t)
 
-	arg := ChangePasswordParams{
-		Username:          user.Username,
-		HashedPassword:    util.RandomString(10),
-		PasswordChangedAt: time.Now(),
+	arg := UpdateUserParams{
+		Username:          util.NewPgText(user.Username),
+		HashedPassword:    util.NewPgText(util.RandomString(6)),
+		PasswordChangedAt: util.NewPgTime(time.Now()),
 	}
-
-	changedUser, err := testQueries.ChangePassword(context.Background(), arg)
+	changedUser, err := testQueries.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, changedUser)
 
 	require.Equal(t, user.FullName, changedUser.FullName)
 	require.Equal(t, user.Username, changedUser.Username)
 	require.Equal(t, user.Email, changedUser.Email)
-	require.Equal(t, arg.HashedPassword, changedUser.HashedPassword)
+	require.Equal(t, arg.HashedPassword.String, changedUser.HashedPassword)
 	require.WithinDuration(t, user.CreatedAt, changedUser.CreatedAt, time.Second)
 }
 
 func TestUpdateUserEmailVerification(t *testing.T) {
 	user := createRandomUser(t)
 
-	arg := UpdateUserEmailVerificationParams{
-		Username:        user.Username,
-		EmailVerifiedAt: pgtype.Timestamptz{Time: time.Now(), Valid: true},
+	arg := UpdateUserParams{
+		Username:        util.NewPgText(user.Username),
+		EmailVerifiedAt: util.NewPgTime(time.Now()),
 	}
 
-	changedUser, err := testQueries.UpdateUserEmailVerification(context.Background(), arg)
+	changedUser, err := testQueries.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, changedUser)
 	require.NotEmpty(t, changedUser.EmailVerifiedAt)
