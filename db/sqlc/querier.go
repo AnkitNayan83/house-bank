@@ -12,7 +12,6 @@ import (
 
 type Querier interface {
 	AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error)
-	ChangePassword(ctx context.Context, arg ChangePasswordParams) (User, error)
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
 	CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
@@ -33,7 +32,7 @@ type Querier interface {
 	GetUsersAccounts(ctx context.Context, username string) ([]Account, error)
 	UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) (Account, error)
 	UpdateSession(ctx context.Context, id uuid.UUID) error
-	UpdateUserEmailVerification(ctx context.Context, arg UpdateUserEmailVerificationParams) (User, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

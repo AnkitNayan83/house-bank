@@ -11,6 +11,7 @@ import (
 	"github.com/AnkitNayan83/houseBank/gapi"
 	"github.com/AnkitNayan83/houseBank/pb"
 	"github.com/AnkitNayan83/houseBank/util"
+	"github.com/golang-migrate/migrate/v4"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rakyll/statik/fs"
@@ -19,6 +20,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	_ "github.com/AnkitNayan83/houseBank/doc/statik" // this is the generated statik file
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
@@ -34,10 +37,28 @@ func main() {
 		log.Fatal("Cannot connect to db: ", err)
 	}
 
+	// Run db migrations
+	runDbMigration(config.MigrationURL, config.DBSource)
+
 	store := db.NewStore(conn)
+	// go runGinServer(store, config)
 	go runGatewayServer(store, config)
 	runGRPCServer(store, config)
 
+}
+
+func runDbMigration(migrationURL string, dbSource string) {
+	migration, err := migrate.New(migrationURL, dbSource)
+
+	if err != nil {
+		log.Fatal("cannot create migration: ", err)
+	}
+
+	if err = migration.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal("cannot run migrate up: ", err)
+	}
+
+	log.Println("db migrated successfully")
 }
 
 func runGinServer(store db.Store, config util.Config) {
@@ -47,7 +68,7 @@ func runGinServer(store db.Store, config util.Config) {
 		log.Fatal("cannot create http server: ", err)
 	}
 
-	err = server.Start(config.HttpServerAddress)
+	err = server.Start(config.GinServerAddress)
 
 	if err != nil {
 		log.Fatal("cannot start http server: ", err)

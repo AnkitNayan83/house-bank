@@ -8,6 +8,8 @@ import (
 
 type Config struct {
 	DBSource               string        `mapstructure:"DB_SOURCE"`
+	MigrationURL           string        `mapstructure:"MIGRATION_URL"`
+	GinServerAddress       string        `mapstructure:"GIN_SERVER_ADDRESS"`
 	HttpServerAddress      string        `mapstructure:"HTTP_SERVER_ADDRESS"`
 	GRPCServerAddress      string        `mapstructure:"GRPC_SERVER_ADDRESS"`
 	TOKEN_SYMMETRIC_KEY    string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`

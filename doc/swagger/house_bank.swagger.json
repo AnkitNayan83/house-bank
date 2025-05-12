@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "HouseBank API",
-    "version": "1.0",
+    "version": "1.2",
     "contact": {
       "name": "Ankit Nayan",
       "url": "https://github.com/AnkitNayan83",
@@ -47,6 +47,38 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/pbCreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "HouseBank"
+        ]
+      },
+      "patch": {
+        "summary": "Update User",
+        "description": "Use this endpoint to update a user in the HouseBank system",
+        "operationId": "HouseBank_UpdateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbUpdateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbUpdateUserRequest"
             }
           }
         ],
@@ -149,6 +181,32 @@
         },
         "sessionId": {
           "type": "string"
+        }
+      }
+    },
+    "pbUpdateUserRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "emailVerifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "pbUpdateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/pbUser"
         }
       }
     },

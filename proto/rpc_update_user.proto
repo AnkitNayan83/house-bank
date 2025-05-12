@@ -1,0 +1,19 @@
+syntax  = "proto3";
+
+package pb;
+
+import "user.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/AnkitNayan83/houseBank/pb";
+
+message UpdateUserRequest {
+    string username = 1;
+    optional string email = 3;
+    optional string full_name = 4;
+    optional google.protobuf.Timestamp email_verified_at = 5;
+}
+
+message UpdateUserResponse {
+    User user = 1;
+}

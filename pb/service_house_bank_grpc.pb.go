@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	HouseBank_CreateUser_FullMethodName = "/pb.HouseBank/CreateUser"
 	HouseBank_LoginUser_FullMethodName  = "/pb.HouseBank/LoginUser"
+	HouseBank_UpdateUser_FullMethodName = "/pb.HouseBank/UpdateUser"
 )
 
 // HouseBankClient is the client API for HouseBank service.
@@ -29,6 +30,7 @@ const (
 type HouseBankClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 }
 
 type houseBankClient struct {
@@ -59,12 +61,23 @@ func (c *houseBankClient) LoginUser(ctx context.Context, in *LoginUserRequest, o
 	return out, nil
 }
 
+func (c *houseBankClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateUserResponse)
+	err := c.cc.Invoke(ctx, HouseBank_UpdateUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HouseBankServer is the server API for HouseBank service.
 // All implementations must embed UnimplementedHouseBankServer
 // for forward compatibility.
 type HouseBankServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	mustEmbedUnimplementedHouseBankServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedHouseBankServer) CreateUser(context.Context, *CreateUserReque
 }
 func (UnimplementedHouseBankServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
+}
+func (UnimplementedHouseBankServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedHouseBankServer) mustEmbedUnimplementedHouseBankServer() {}
 func (UnimplementedHouseBankServer) testEmbeddedByValue()                   {}
@@ -138,6 +154,24 @@ func _HouseBank_LoginUser_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HouseBank_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HouseBankServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HouseBank_UpdateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HouseBankServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // HouseBank_ServiceDesc is the grpc.ServiceDesc for HouseBank service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var HouseBank_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoginUser",
 			Handler:    _HouseBank_LoginUser_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _HouseBank_UpdateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
