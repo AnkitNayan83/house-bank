@@ -22,31 +22,26 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 		return nil, invalidArgumentError(violations)
 	}
 
-	hashedPassword, err := util.HashPassword(req.GetPassword()) // using get is safer than using req.Password because it will not panic if the field is not set
-
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "cannot hash password: %v", err)
+	arg := db.UpdateUserParams{
+		Username:        util.NewPgText(req.GetUsername()),
+		FullName:        util.NewPgText(req.GetFullName()),
+		Email:           util.NewPgText(req.GetEmail()),
+		EmailVerifiedAt: util.NewPgTime(req.GetEmailVerifiedAt().AsTime()),
 	}
 
-	arg := db.CreateUserParams{
-		Username:       req.GetUsername(),
-		FullName:       req.GetFullName(),
-		Email:          req.GetEmail(),
-		HashedPassword: hashedPassword,
-	}
-
-	user, err := server.store.CreateUser(ctx, arg)
+	user, err := server.store.UpdateUser(ctx, arg)
 
 	if err != nil {
 		var pgErr *pgconn.PgError
 
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
-			case "23505": // unique_violation
-				return nil, status.Errorf(codes.AlreadyExists, "user already exists: %v", err)
+			case "23503": // foreign key violation
+				return nil, status.Errorf(codes.NotFound, "user not found: %v", err)
 			}
 		}
-		return nil, status.Errorf(codes.Internal, "cannot create user: %v", err)
+
+		return nil, status.Errorf(codes.Internal, "cannot update user: %v", err)
 	}
 
 	res = &pb.UpdateUserResponse{
@@ -61,21 +56,15 @@ func validateUpdateUserRequest(req *pb.UpdateUserRequest) (violations []*errdeta
 		violations = append(violations, fieldViolation("username", err))
 	}
 
-	if req.GetFullName() != "" {
+	if req.FullName != nil {
 		if err := validators.ValidateFullname(req.GetFullName()); err != nil {
 			violations = append(violations, fieldViolation("full_name", err))
 		}
 	}
 
-	if req.GetEmail() != "" {
+	if req.Email != nil {
 		if err := validators.ValidateEmail(req.GetEmail()); err != nil {
 			violations = append(violations, fieldViolation("email", err))
-		}
-	}
-
-	if req.GetPassword() != "" {
-		if err := validators.ValidatePassword(req.GetPassword()); err != nil {
-			violations = append(violations, fieldViolation("password", err))
 		}
 	}
 

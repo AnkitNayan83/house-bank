@@ -23,15 +23,13 @@ const (
 )
 
 type UpdateUserRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	Username          string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password          string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	Email             string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	FullName          string                 `protobuf:"bytes,4,opt,name=full_name,json=fullName,proto3" json:"full_name,omitempty"`
-	EmailVerifiedAt   *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=email_verified_at,json=emailVerifiedAt,proto3" json:"email_verified_at,omitempty"`
-	PasswordChangedAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=password_changed_at,json=passwordChangedAt,proto3" json:"password_changed_at,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Username        string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Email           *string                `protobuf:"bytes,3,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	FullName        *string                `protobuf:"bytes,4,opt,name=full_name,json=fullName,proto3,oneof" json:"full_name,omitempty"`
+	EmailVerifiedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=email_verified_at,json=emailVerifiedAt,proto3,oneof" json:"email_verified_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UpdateUserRequest) Reset() {
@@ -71,23 +69,16 @@ func (x *UpdateUserRequest) GetUsername() string {
 	return ""
 }
 
-func (x *UpdateUserRequest) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
 func (x *UpdateUserRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
+	if x != nil && x.Email != nil {
+		return *x.Email
 	}
 	return ""
 }
 
 func (x *UpdateUserRequest) GetFullName() string {
-	if x != nil {
-		return x.FullName
+	if x != nil && x.FullName != nil {
+		return *x.FullName
 	}
 	return ""
 }
@@ -95,13 +86,6 @@ func (x *UpdateUserRequest) GetFullName() string {
 func (x *UpdateUserRequest) GetEmailVerifiedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.EmailVerifiedAt
-	}
-	return nil
-}
-
-func (x *UpdateUserRequest) GetPasswordChangedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.PasswordChangedAt
 	}
 	return nil
 }
@@ -155,14 +139,16 @@ var File_rpc_update_user_proto protoreflect.FileDescriptor
 const file_rpc_update_user_proto_rawDesc = "" +
 	"\n" +
 	"\x15rpc_update_user.proto\x12\x02pb\x1a\n" +
-	"user.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x92\x02\n" +
+	"user.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\x01\n" +
 	"\x11UpdateUserRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1b\n" +
-	"\tfull_name\x18\x04 \x01(\tR\bfullName\x12F\n" +
-	"\x11email_verified_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x0femailVerifiedAt\x12J\n" +
-	"\x13password_changed_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x11passwordChangedAt\"2\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x19\n" +
+	"\x05email\x18\x03 \x01(\tH\x00R\x05email\x88\x01\x01\x12 \n" +
+	"\tfull_name\x18\x04 \x01(\tH\x01R\bfullName\x88\x01\x01\x12K\n" +
+	"\x11email_verified_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x02R\x0femailVerifiedAt\x88\x01\x01B\b\n" +
+	"\x06_emailB\f\n" +
+	"\n" +
+	"_full_nameB\x14\n" +
+	"\x12_email_verified_at\"2\n" +
 	"\x12UpdateUserResponse\x12\x1c\n" +
 	"\x04user\x18\x01 \x01(\v2\b.pb.UserR\x04userB&Z$github.com/AnkitNayan83/houseBank/pbb\x06proto3"
 
@@ -187,13 +173,12 @@ var file_rpc_update_user_proto_goTypes = []any{
 }
 var file_rpc_update_user_proto_depIdxs = []int32{
 	2, // 0: pb.UpdateUserRequest.email_verified_at:type_name -> google.protobuf.Timestamp
-	2, // 1: pb.UpdateUserRequest.password_changed_at:type_name -> google.protobuf.Timestamp
-	3, // 2: pb.UpdateUserResponse.user:type_name -> pb.User
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 1: pb.UpdateUserResponse.user:type_name -> pb.User
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_rpc_update_user_proto_init() }
@@ -202,6 +187,7 @@ func file_rpc_update_user_proto_init() {
 		return
 	}
 	file_user_proto_init()
+	file_rpc_update_user_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

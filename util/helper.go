@@ -7,9 +7,9 @@ import (
 )
 
 func NewPgText(s string) pgtype.Text {
-	return pgtype.Text{String: s, Valid: true}
+	return pgtype.Text{String: s, Valid: s != ""}
 }
 
 func NewPgTime(t time.Time) pgtype.Timestamptz {
-	return pgtype.Timestamptz{Time: t, Valid: true}
+	return pgtype.Timestamptz{Time: t, Valid: t != time.Time{}}
 }

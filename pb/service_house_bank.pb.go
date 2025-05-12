@@ -35,7 +35,7 @@ const file_service_house_bank_proto_rawDesc = "" +
 	"\n" +
 	"UpdateUser\x12\x15.pb.UpdateUserRequest\x1a\x16.pb.UpdateUserResponse\"_\x92AI\x12\vUpdate User\x1a:Use this endpoint to update a user in the HouseBank system\x82\xd3\xe4\x93\x02\r:\x01*2\b/v1/userB\x87\x01\x92A^\x12\\\n" +
 	"\rHouseBank API\"F\n" +
-	"\vAnkit Nayan\x12\x1fhttps://github.com/AnkitNayan83\x1a\x16ankitnayan83@gmail.com2\x031.0Z$github.com/AnkitNayan83/houseBank/pbb\x06proto3"
+	"\vAnkit Nayan\x12\x1fhttps://github.com/AnkitNayan83\x1a\x16ankitnayan83@gmail.com2\x031.2Z$github.com/AnkitNayan83/houseBank/pbb\x06proto3"
 
 var file_service_house_bank_proto_goTypes = []any{
 	(*CreateUserRequest)(nil),  // 0: pb.CreateUserRequest

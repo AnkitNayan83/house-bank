@@ -23,11 +23,10 @@ WHERE email = $1;
 -- name: UpdateUser :one
 UPDATE users
 SET
-    username = COALESCE(sqlc.narg('username'), username),
-    full_name = COALESCE(sqlc.narg('full_name'), full_name),
-    email = COALESCE(sqlc.narg('email'), email),
-    email_verified_at = COALESCE(sqlc.narg('email_verified_at'), email_verified_at),
-    password_changed_at = COALESCE(sqlc.narg('password_changed_at'), password_changed_at),
-    hashed_password = COALESCE(sqlc.narg('hashed_password'), hashed_password)
-WHERE username = sqlc.narg('username')
+    full_name = COALESCE(sqlc.narg(full_name), full_name),
+    email = COALESCE(sqlc.narg(email), email),
+    email_verified_at = COALESCE(sqlc.narg(email_verified_at), email_verified_at),
+    password_changed_at = COALESCE(sqlc.narg(password_changed_at), password_changed_at),
+    hashed_password = COALESCE(sqlc.narg(hashed_password), hashed_password)
+WHERE username = sqlc.narg(username)
 RETURNING *; 

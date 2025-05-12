@@ -13,7 +13,7 @@ option go_package = "github.com/AnkitNayan83/houseBank/pb";
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
     info: {
       title: "HouseBank API"
-      version: "1.0"
+      version: "1.2"
       contact: {
         name: "Ankit Nayan"
         url: "https://github.com/AnkitNayan83"

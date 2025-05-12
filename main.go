@@ -41,7 +41,7 @@ func main() {
 	runDbMigration(config.MigrationURL, config.DBSource)
 
 	store := db.NewStore(conn)
-	go runGinServer(store, config)
+	// go runGinServer(store, config)
 	go runGatewayServer(store, config)
 	runGRPCServer(store, config)
 

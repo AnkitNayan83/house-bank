@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "HouseBank API",
-    "version": "1.0",
+    "version": "1.2",
     "contact": {
       "name": "Ankit Nayan",
       "url": "https://github.com/AnkitNayan83",
@@ -190,9 +190,6 @@
         "username": {
           "type": "string"
         },
-        "password": {
-          "type": "string"
-        },
         "email": {
           "type": "string"
         },
@@ -200,10 +197,6 @@
           "type": "string"
         },
         "emailVerifiedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "passwordChangedAt": {
           "type": "string",
           "format": "date-time"
         }

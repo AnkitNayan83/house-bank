@@ -9,11 +9,9 @@ option go_package = "github.com/AnkitNayan83/houseBank/pb";
 
 message UpdateUserRequest {
     string username = 1;
-    string password = 2;
-    string email = 3;
-    string full_name = 4;
-    google.protobuf.Timestamp email_verified_at = 5;
-    google.protobuf.Timestamp password_changed_at = 6;
+    optional string email = 3;
+    optional string full_name = 4;
+    optional google.protobuf.Timestamp email_verified_at = 5;
 }
 
 message UpdateUserResponse {
