@@ -64,5 +64,8 @@ proto:
 evans:
 	evans --host localhost --port 8000 --reflection --repl
 
+redis:
+	docker run --name redis -p 6379:6379 -d redis:8.0.1-alpine
 
-.PHONY: postgresconsole image postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock proto evans
+
+.PHONY: postgresconsole image postgresrun postgresstart postgresstop createdb dropdb newmigration migrateup migrateupone migratedown migratedownone sqlc test server mock proto evans redis

@@ -9,6 +9,8 @@ import (
 	"github.com/AnkitNayan83/houseBank/pb"
 	"github.com/AnkitNayan83/houseBank/util"
 	"github.com/AnkitNayan83/houseBank/validators"
+	"github.com/AnkitNayan83/houseBank/workers"
+	"github.com/hibiken/asynq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -36,6 +38,24 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "incorrect password: %v", err)
+	}
+
+	// check if user is verified
+	if !user.EmailVerifiedAt.Valid {
+		taskPayload := &workers.PayloadSendVerifyEmail{
+			Username: user.Username,
+		}
+		opts := []asynq.Option{
+			asynq.MaxRetry(10),
+			asynq.Queue(workers.QueueueCritical),
+		}
+		err := server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
+
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "cannot send verification email: %v", err)
+		}
+
+		return nil, status.Errorf(codes.Unauthenticated, "user is not verified, verification email sent")
 	}
 
 	accessToken, accessTokenPayload, err := server.tokenMaker.CreateToken(user.Username, server.config.ACCESS_TOKEN_DURATION)

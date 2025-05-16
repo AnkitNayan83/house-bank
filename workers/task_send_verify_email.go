@@ -73,15 +73,6 @@ func (processor *RedisTaskProcessor) ProcessSendVerifyEmail(ctx context.Context,
 
 	// TODO: send email to user
 
-	// _, err = processor.store.UpdateUser(ctx, db.UpdateUserParams{
-	// 	Username:        util.NewPgText(payload.Username),
-	// 	EmailVerifiedAt: util.NewPgTime(time.Now()),
-	// })
-
-	// if err != nil {
-	// 	return fmt.Errorf("failed to update user: %w", err)
-	// }
-
 	log.Info().
 		Str("type", task.Type()).
 		Bytes("payload", task.Payload()).

@@ -8,6 +8,8 @@ import (
 	"github.com/AnkitNayan83/houseBank/pb"
 	"github.com/AnkitNayan83/houseBank/util"
 	"github.com/AnkitNayan83/houseBank/validators"
+	"github.com/AnkitNayan83/houseBank/workers"
+	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5/pgconn"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -35,7 +37,25 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 		HashedPassword: hashedPassword,
 	}
 
-	user, err := server.store.CreateUser(ctx, arg)
+	createUserTxPayload := db.CreateUserTxParams{
+		CreateUserParams: arg,
+		AfterCreateUser: func(user db.User) error {
+			// Send verification email task to the queue
+			taskPayload := &workers.PayloadSendVerifyEmail{
+				Username: user.Username,
+			}
+
+			opts := []asynq.Option{
+				asynq.MaxRetry(10),
+				// asynq.ProcessIn(10 * time.Second), for testing
+				asynq.Queue(workers.QueueueCritical),
+			}
+
+			return server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
+		},
+	}
+
+	result, err := server.store.CreateUserTx(ctx, createUserTxPayload)
 
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -50,7 +70,7 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	res = &pb.CreateUserResponse{
-		User: convertUser(user),
+		User: convertUser(result.User),
 	}
 
 	return res, nil
