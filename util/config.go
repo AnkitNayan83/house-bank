@@ -17,6 +17,7 @@ type Config struct {
 	REFRESH_TOKEN_DURATION time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	Environment            string        `mapstructure:"ENVIRONMENT"`
 	RedisAddress           string        `mapstructure:"REDIS_ADDRESS"`
+	GmailAppPassword       string        `mapstructure:"GMAIL_APP_PASSWORD"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
