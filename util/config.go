@@ -12,6 +12,7 @@ type Config struct {
 	GinServerAddress       string        `mapstructure:"GIN_SERVER_ADDRESS"`
 	HttpServerAddress      string        `mapstructure:"HTTP_SERVER_ADDRESS"`
 	GRPCServerAddress      string        `mapstructure:"GRPC_SERVER_ADDRESS"`
+	GRPCGatewayAddress     string        `mapstructure:"GRPC_GATEWAY_SERVER_ADDRESS"`
 	TOKEN_SYMMETRIC_KEY    string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	ACCESS_TOKEN_DURATION  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	REFRESH_TOKEN_DURATION time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`

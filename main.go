@@ -171,7 +171,7 @@ func runGatewayServer(store db.Store, config util.Config, taskDistributor worker
 	swaggerHandler := http.StripPrefix("/swagger/", http.FileServer(statikFs))
 	mux.Handle("/swagger/", swaggerHandler)
 
-	listener, err := net.Listen("tcp", config.HttpServerAddress)
+	listener, err := net.Listen("tcp", config.GRPCGatewayAddress)
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create listener:")
